@@ -1,0 +1,95 @@
+body {
+  font-family: 'Titillium Web', sans-serif;
+  background-color:#2c2f33;
+}
+table {
+    border-collapse: collapse;
+    width: 80%;
+    margin: 0 auto;
+    background-color: whitesmoke;
+  }
+  
+  td {
+    border: 1px solid #ccc;
+    padding: 15px;
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  h1 {
+    text-align: center;
+    color: whitesmoke;
+  }
+  
+  span{
+    font-weight: bold;
+  }
+
+  .semestre{
+    background-color: black;
+    color:whitesmoke
+  }
+
+  .search-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 50px;
+  }
+  
+  .search-container input{
+    height: 30px; /* Ajuste a altura conforme necessário */
+    padding-right: 100px; /* Adicione um espaçamento à direita para o botão */
+  }
+  
+  .search-container button {
+    height: 34px; /* Ajuste a altura para ser a mesma do input */
+    padding: 0 20px; /* Ajuste o espaçamento interno conforme necessário */
+  }
+
+  .search-button {
+    background-color: #3829ff; /* Cor de fundo azul-turquesa */
+    color: white; /* Cor do ícone em branco */
+    /* Outras propriedades de estilo do botão */
+  }
+
+  .aprovado {
+    background-color: green;
+  }
+  
+  .reprovado {
+    background-color: red;
+  }
+  
+  .matriculado {
+    background-color: yellow;
+  }
+  
+  .equivalencia {
+    background-color: blue;
+  }
+
+  .popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #f44336;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+}
+.popup2 {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: green;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+}
