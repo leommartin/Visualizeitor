@@ -1,148 +1,138 @@
 
-// Função para carregar o arquivo XML
-// Declare a variável xmlData no escopo global
-let xmlData;
-let grids = {};
 
-const grid = document.getElementById('grade');
-const cells = grid.getElementsByTagName('td');
+var xmlData;
 
+document.addEventListener("DOMContentLoaded", function() {
+  var btnSearch = document.getElementById("btnSearch");
+  btnSearch.addEventListener("click", function() {
+    var searchInput = document.getElementById("searchInput").value;
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.status === 200) {
+          xmlData = xhr.responseXML;
+          var alunos = xmlData.getElementsByTagName("ALUNO");
+          let alunoEncontrado = false;
 
-// Função para carregar o arquivo XML
-function loadXML() 
-{
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            xmlData = this.responseXML; // Atribua o valor ao xmlData global
-            processXML();
-        }
-    };
-    xhttp.open("GET", "../data/alunos.xml", true);
-    xhttp.send();
-}
-
-function processXML()
-{
-    const students = xmlData.getElementsByTagName("ALUNO");
-
-    for (let i = 0; i < students.length; i++)
-    {
-        const student = students[i];
-        // const situation = student.getElementsByTagName('SITUACAO')[0].textContent;
-        // const sigla = student.getElementsByTagName('SITUACAO')[0].textContent;
-        const grr = student.getElementsByTagName('MATR_ALUNO')[0].textContent;
-        const course = student.getElementsByTagName('COD_ATIV_CURRIC')[0].textContent;
-        let code = course;
-        
-        if(grids[grr] == null)
-        {
-            grids[grr] = {};
-        }
-
-        // If the table for the course doesn't exist yet, create it
-        if (grids[grr][code] == null)
-        {
-            grids[grr][code] = createTable();
-        }
-
-        // if ((type == 'Optativas') && (code != 'OPT')) 
-        // {
-        //   if (grids[grr]['OPT'] == null) 
-        //   {
-        //       grids[grr]['OPT'] = createTable();
-        //   }
-        //   row = grids[grr]['OPT'].getElementsByTagName('tbody')[0].insertRow();
-        //   row.innerHTML = `<td>${course}</td><td>${name}</td><td>${year}</td><td>${semester}</td><td>${situation}</td><td>${grade}</td><td>${attendance}</td>`;
-        // }
-        // row = tables[grr][code].getElementsByTagName('tbody')[0].insertRow();
-        // row.innerHTML = `<td>${course}</td><td>${name}</td><td>${year}</td><td>${semester}</td><td>${situation}</td><td>${grade}</td><td>${attendance}</td>`;
-    }
-}
-
-let currentStudent;
-
-function searchStudent() 
-{
-    const input = document.getElementById("searchInput");
-    const grr = input.value;
-    const studentInfo = grids[grr];
-    
-    if(studentInfo != null)
-    {
-        currentStudent = grr;
-        console.log("Aluno encontrado!");
-
-        let popup = document.createElement("div");
-        popup.className = "popup2";
-        popup.innerHTML = "Aluno encontrado!";
-        document.body.appendChild(popup);
-    
-        // Remover o pop-up após alguns segundos
-        setTimeout(function()
-        {
-            document.body.removeChild(popup);
-        }, 3000);
-        renderTable();
-    }
-    else
-    {
-        console.log("Aluno não encontrado");
-
-        let popup = document.createElement("div");
-        popup.className = "popup";
-        popup.innerHTML = "Aluno não encontrado!";
-        document.body.appendChild(popup);
-    
-        // Remover o pop-up após alguns segundos
-        setTimeout(function()
-        {
-            document.body.removeChild(popup);
-        }, 3000);
-    }
-}
-
-function createTable() 
-{
-    let table = document.createElement('table');
-    const tableHeader = table.createTHead();
-    const headerRow = tableHeader.insertRow();
-    headerRow.innerHTML = '<th>Código</th><th>Nome</th><th>Ano</th><th>Período</th><th>Situação</th><th>Nota</th><th>Frequência</th>';
-    table.createTBody();
-    return table;
-}
-
-function renderTable() {
-  for (let i = 0; i < cells.length; i++) {
-      let code = cells[i].id;
-      if (grids[currentStudent] && grids[currentStudent][code]) {
-          let rows = grids[currentStudent][code].getElementsByTagName('tr');
-          if (rows.length > 0) {
-              let situationCell = rows[rows.length - 1].getElementsByTagName('td')[4];
-              if (situationCell) {
-                  let situation = situationCell.textContent;
-
-                  if (situation == 'Aprovado') {
-                      cells[i].style.backgroundColor = '#4CAF50';
-                  } else if (situation == 'Reprovado por nota' || situation == 'Reprovado por Frequência') {
-                      cells[i].style.backgroundColor = '#F44336';
-                  } else if (situation == 'Equivalência de Disciplina') {
-                      cells[i].style.backgroundColor = '#FBC02D';
-                  } else if (situation == 'Matrícula') {
-                      cells[i].style.backgroundColor = '#1E88E5';
-                  } else {
-                      cells[i].style.backgroundColor = '#3E3E42';
-                  }
-                  continue;
-              }
+          for (var i = 0; i < alunos.length; i++) {
+            var matriculaAluno = alunos[i].getElementsByTagName("MATR_ALUNO")[0].innerHTML;
+            if (matriculaAluno === searchInput) {
+              alunoEncontrado = true;
+              break;
+            }
           }
+
+          if (alunoEncontrado) {
+            exibirTabelaAluno(matriculaAluno);
+          } else {
+            alert("Aluno não encontrado!");
+          }
+        } else {
+          alert("Erro ao carregar XML!");
+        }
       }
-      cells[i].style.backgroundColor = '#606060';
+    };
+    xhr.open("GET", "../data/alunos.xml", true);
+    xhr.send();
+  });
+});
+
+function limparTabela() {
+  var tabela = document.getElementById("grade");
+  var linhas = tabela.getElementsByTagName("tr");
+
+  // Iterar sobre as células da tabela e redefinir a cor de fundo
+  for (var i = 1; i < linhas.length; i++) {
+    var celulas = linhas[i].getElementsByTagName("td");
+    for (var j = 0; j < celulas.length; j++) {
+      celulas[j].style.backgroundColor = "";
+    }
   }
 }
 
-var btnSearch = document.getElementById("btnSearch");
-btnSearch.addEventListener("click", searchStudent);
+function exibirTabelaAluno(matricula) 
+{
+    limparTabela();
+    var tabela = document.getElementById("grade");
+    var linhas = tabela.getElementsByTagName("tr");
 
-// Chame a função loadXML para carregar e processar o XML quando necessário
-loadXML();
+    var alunos = xmlData.getElementsByTagName("ALUNO");
+
+    let contador_opt = 1;
+    // let codigo_opt = "";
+
+    // var matriculas = xmlData.getElementsByTagName("MATR_ALUNO");
+    // console.log("Quantidade de tags MATR_ALUNO: ", matriculas.length);
+
+    for (let i  = 0; i < alunos.length; i++)
+    {
+        if(matricula === alunos[i].getElementsByTagName("MATR_ALUNO")[0].innerHTML)
+        {
+            // console.log("matricula encontrada!");
+            let aluno = alunos[i];
+            
+            for(let lin = 1; lin < linhas.length; lin++)
+            {
+                var celulas = linhas[lin].getElementsByTagName("td");
+ 
+                for(let col = 0; col < celulas.length; col++)
+                {
+                    var disciplina = celulas[col];
+                    var id = disciplina.getAttribute("id");
+
+                    let situacao = aluno.getElementsByTagName("SITUACAO")[0].innerHTML;
+                    // console.log("sigla: ", situacao);
+                    let codigo_curso = aluno.getElementsByTagName("COD_ATIV_CURRIC")[0].innerHTML;
+
+                    let tipo_disciplina = aluno.getElementsByTagName("DESCR_ESTRUTURA")[0].innerHTML;
+
+                    // if (tipo_disciplina === "Optativas" && id.includes("OPT")) 
+                    // {
+                    //   codigo_curso = "OPT" + contador_opt;
+                    //   if(codigo_curso === id)
+                    //   {
+                    //     contador_opt++;
+                    //     console.log("ID:", id, " COD:", codigo_curso, " Situacao: ", situacao);
+                    //   }
+                    //   else
+                    //   {
+                    //     console.log("ID:", id, " COD:", codigo_curso);
+                    //   }// Incrementar o contador apenas quando tipo_disciplina for igual a "Optativas"
+                    if (tipo_disciplina === "Trabalho de Graduação I") 
+                    {
+                      codigo_curso = "TG1";
+                    } 
+                    else if (tipo_disciplina === "Trabalho de Graduação II")
+                    {
+                      codigo_curso = "TG2";
+                    }
+
+                    if (id === codigo_curso)
+                    {
+                        if (situacao === "Aprovado") 
+                        {
+                          disciplina.style.backgroundColor = "#32CD32";
+                        } 
+                        else if (situacao === "Reprovado por nota" || situacao === "Reprovado por Frequência") 
+                        {
+                          disciplina.style.backgroundColor = "red";
+                        } 
+                        else if (situacao === "Matrícula") 
+                        {
+                          disciplina.style.backgroundColor = "#00BFFF";
+                        } 
+                        else if (situacao === "Equivalência de Disciplina") 
+                        {
+                          disciplina.style.backgroundColor = "yellow";
+                        } 
+                        else 
+                        {
+                          disciplina.style.backgroundColor = "gray";
+                        }
+                    }
+                }
+            } 
+        }
+    }
+}
+
